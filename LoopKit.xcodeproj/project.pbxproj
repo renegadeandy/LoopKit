@@ -526,6 +526,17 @@
 		9E784341236656770016C583 /* ice_35_min_partial_piecewiselinear_output.json in Resources */ = {isa = PBXBuildFile; fileRef = 9E784340236656770016C583 /* ice_35_min_partial_piecewiselinear_output.json */; };
 		9E784343236659BD0016C583 /* ice_slow_absorption_piecewiselinear_output.json in Resources */ = {isa = PBXBuildFile; fileRef = 9E784342236659BD0016C583 /* ice_slow_absorption_piecewiselinear_output.json */; };
 		9E78434523665B5A0016C583 /* ice_35_min_partial_piecewiselinear_adaptiverate_output.json in Resources */ = {isa = PBXBuildFile; fileRef = 9E78434423665B5A0016C583 /* ice_35_min_partial_piecewiselinear_adaptiverate_output.json */; };
+		A1EE8C552649D08E00CFE4FA /* DanaRSPumpManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EE8C4F2649D08E00CFE4FA /* DanaRSPumpManager.swift */; };
+		A1EE8C562649D08E00CFE4FA /* DanaRSPumpManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EE8C4F2649D08E00CFE4FA /* DanaRSPumpManager.swift */; };
+		A1EE8C572649D08E00CFE4FA /* MockPumpManagerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EE8C502649D08E00CFE4FA /* MockPumpManagerState.swift */; };
+		A1EE8C582649D08E00CFE4FA /* MockPumpManagerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EE8C502649D08E00CFE4FA /* MockPumpManagerState.swift */; };
+		A1EE8C592649D08E00CFE4FA /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A1EE8C512649D08E00CFE4FA /* Info.plist */; };
+		A1EE8C5A2649D08E00CFE4FA /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A1EE8C512649D08E00CFE4FA /* Info.plist */; };
+		A1EE8C5B2649D08E00CFE4FA /* DanaRSBluetoothManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EE8C522649D08E00CFE4FA /* DanaRSBluetoothManager.swift */; };
+		A1EE8C5C2649D08E00CFE4FA /* DanaRSBluetoothManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EE8C522649D08E00CFE4FA /* DanaRSBluetoothManager.swift */; };
+		A1EE8C5D2649D08E00CFE4FA /* MockDoseProgressEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EE8C532649D08E00CFE4FA /* MockDoseProgressEstimator.swift */; };
+		A1EE8C5E2649D08E00CFE4FA /* MockDoseProgressEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EE8C532649D08E00CFE4FA /* MockDoseProgressEstimator.swift */; };
+		A1EE8C5F2649D08E00CFE4FA /* DanaRSKit.h in Headers */ = {isa = PBXBuildFile; fileRef = A1EE8C542649D08E00CFE4FA /* DanaRSKit.h */; };
 		A9012EB225BA3861000813AD /* SetupUIResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9012EB125BA3861000813AD /* SetupUIResult.swift */; };
 		A912BE29245B9CD500CBE199 /* SettingsObject+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = A912BE28245B9CD500CBE199 /* SettingsObject+CoreDataClass.swift */; };
 		A912BE2B245B9E8600CBE199 /* SettingsObject+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A912BE2A245B9E8600CBE199 /* SettingsObject+CoreDataProperties.swift */; };
@@ -1468,6 +1479,12 @@
 		9E784340236656770016C583 /* ice_35_min_partial_piecewiselinear_output.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ice_35_min_partial_piecewiselinear_output.json; sourceTree = "<group>"; };
 		9E784342236659BD0016C583 /* ice_slow_absorption_piecewiselinear_output.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ice_slow_absorption_piecewiselinear_output.json; sourceTree = "<group>"; };
 		9E78434423665B5A0016C583 /* ice_35_min_partial_piecewiselinear_adaptiverate_output.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ice_35_min_partial_piecewiselinear_adaptiverate_output.json; sourceTree = "<group>"; };
+		A1EE8C4F2649D08E00CFE4FA /* DanaRSPumpManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DanaRSPumpManager.swift; path = LoopKit/DanaRSKit/DanaRSPumpManager.swift; sourceTree = SOURCE_ROOT; };
+		A1EE8C502649D08E00CFE4FA /* MockPumpManagerState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MockPumpManagerState.swift; path = LoopKit/DanaRSKit/MockPumpManagerState.swift; sourceTree = SOURCE_ROOT; };
+		A1EE8C512649D08E00CFE4FA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; name = Info.plist; path = LoopKit/DanaRSKit/Info.plist; sourceTree = SOURCE_ROOT; };
+		A1EE8C522649D08E00CFE4FA /* DanaRSBluetoothManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DanaRSBluetoothManager.swift; path = LoopKit/DanaRSKit/DanaRSBluetoothManager.swift; sourceTree = SOURCE_ROOT; };
+		A1EE8C532649D08E00CFE4FA /* MockDoseProgressEstimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MockDoseProgressEstimator.swift; path = LoopKit/DanaRSKit/MockDoseProgressEstimator.swift; sourceTree = SOURCE_ROOT; };
+		A1EE8C542649D08E00CFE4FA /* DanaRSKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DanaRSKit.h; path = LoopKit/DanaRSKit/DanaRSKit.h; sourceTree = SOURCE_ROOT; };
 		A9012EB125BA3861000813AD /* SetupUIResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupUIResult.swift; sourceTree = "<group>"; };
 		A912BE28245B9CD500CBE199 /* SettingsObject+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SettingsObject+CoreDataClass.swift"; sourceTree = "<group>"; };
 		A912BE2A245B9E8600CBE199 /* SettingsObject+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SettingsObject+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -2185,6 +2202,7 @@
 		43D8FDC11C728FDF0073BE78 = {
 			isa = PBXGroup;
 			children = (
+				A1EE8C2C2649CFEF00CFE4FA /* DanaRSKit */,
 				E9D95F9C24C8BC880079F47D /* Scripts */,
 				1F5DAB1B2118C91C00048054 /* Common */,
 				430059211CCDC7A200C861EA /* Extensions */,
@@ -2662,6 +2680,19 @@
 			path = "View Controllers";
 			sourceTree = "<group>";
 		};
+		A1EE8C2C2649CFEF00CFE4FA /* DanaRSKit */ = {
+			isa = PBXGroup;
+			children = (
+				A1EE8C522649D08E00CFE4FA /* DanaRSBluetoothManager.swift */,
+				A1EE8C542649D08E00CFE4FA /* DanaRSKit.h */,
+				A1EE8C4F2649D08E00CFE4FA /* DanaRSPumpManager.swift */,
+				A1EE8C512649D08E00CFE4FA /* Info.plist */,
+				A1EE8C532649D08E00CFE4FA /* MockDoseProgressEstimator.swift */,
+				A1EE8C502649D08E00CFE4FA /* MockPumpManagerState.swift */,
+			);
+			path = DanaRSKit;
+			sourceTree = "<group>";
+		};
 		A9E068142534EB6B00BDAB59 /* Persistence */ = {
 			isa = PBXGroup;
 			children = (
@@ -2841,6 +2872,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1EE8C5F2649D08E00CFE4FA /* DanaRSKit.h in Headers */,
 				43D8FDCF1C728FDF0073BE78 /* LoopKit.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3189,6 +3221,7 @@
 			files = (
 				7D68A9AE1FE0A3D000522C49 /* Localizable.strings in Resources */,
 				430158061C7EC03B00B64B63 /* LaunchScreen.storyboard in Resources */,
+				A1EE8C592649D08E00CFE4FA /* Info.plist in Resources */,
 				430158031C7EC03B00B64B63 /* Assets.xcassets in Resources */,
 				430158011C7EC03B00B64B63 /* Main.storyboard in Resources */,
 				4301582B1C7ECCEF00B64B63 /* LoopKitExample.entitlements in Resources */,
@@ -3229,6 +3262,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1EE8C5A2649D08E00CFE4FA /* Info.plist in Resources */,
 				1F5DAB2D2118CE9300048054 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3472,6 +3506,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1EE8C5B2649D08E00CFE4FA /* DanaRSBluetoothManager.swift in Sources */,
+				A1EE8C552649D08E00CFE4FA /* DanaRSPumpManager.swift in Sources */,
 				1F5DAB1D2118C95700048054 /* LocalizedString.swift in Sources */,
 				4302F4DF1D4E607B00F0FCAF /* InsulinDeliveryTableViewController.swift in Sources */,
 				43177D041D372A7F0006E908 /* CarbEntryTableViewController.swift in Sources */,
@@ -3482,8 +3518,10 @@
 				43177D021D3729E60006E908 /* IdentifiableClass.swift in Sources */,
 				B4AA27F224C1ECDC001B8AFA /* UIColor.swift in Sources */,
 				4302F4D91D4D32D500F0FCAF /* NSTimeInterval.swift in Sources */,
+				A1EE8C5D2649D08E00CFE4FA /* MockDoseProgressEstimator.swift in Sources */,
 				435F355E1C9CD16A00C204D2 /* NSUserDefaults.swift in Sources */,
 				435F35611C9CD25F00C204D2 /* DeviceDataManager.swift in Sources */,
+				A1EE8C572649D08E00CFE4FA /* MockPumpManagerState.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3724,10 +3762,11 @@
 				C17F39C123CD24A000FA1113 /* DeviceLog.xcdatamodeld in Sources */,
 				B42C951924A508CE00857C73 /* DeviceStatusHighlight.swift in Sources */,
 				4322B779202FA2790002837D /* NewCarbEntry.swift in Sources */,
+				A1EE8C562649D08E00CFE4FA /* DanaRSPumpManager.swift in Sources */,
+				A1EE8C5E2649D08E00CFE4FA /* MockDoseProgressEstimator.swift in Sources */,
 				898C896A24D4BF11002FA994 /* Guardrail+Settings.swift in Sources */,
 				4322B76E202FA26B0002837D /* GlucoseMath.swift in Sources */,
 				B455F4D32600DA0B000ED456 /* GlucoseRange.swift in Sources */,
-				4322B791202FA2B70002837D /* Model.xcdatamodeld in Sources */,
 				891A3FDB224BEC0D00378B27 /* CarbSensitivitySchedule.swift in Sources */,
 				4322B773202FA2790002837D /* CarbEntry.swift in Sources */,
 				C1E84B8525C62FB100623C08 /* Modelv1v4.xcmappingmodel in Sources */,
@@ -3743,6 +3782,7 @@
 				C140DFFF260276BF000A4FF7 /* ManualBolusRecommendation.swift in Sources */,
 				432CF86F20D76CCF0066B889 /* GlucoseTrend.swift in Sources */,
 				B47ECFE225DC3EFC0024A54D /* DeviceStatusBadge.swift in Sources */,
+				A1EE8C5C2649D08E00CFE4FA /* DanaRSBluetoothManager.swift in Sources */,
 				43FB60E920DCBE64002B996B /* PumpManagerStatus.swift in Sources */,
 				4322B774202FA2790002837D /* CarbMath.swift in Sources */,
 				4322B78B202FA2B30002837D /* ExponentialInsulinModel.swift in Sources */,
@@ -3869,6 +3909,7 @@
 				4322B770202FA26F0002837D /* GlucoseStore.swift in Sources */,
 				C1814B8C226371DF008D2D8E /* WeakSynchronizedDelegate.swift in Sources */,
 				1D1FCE2724BE4DE2000300A8 /* CorrectionRangeOverrides.swift in Sources */,
+				A1EE8C582649D08E00CFE4FA /* MockPumpManagerState.swift in Sources */,
 				1D1FCE2924BE4F11000300A8 /* TherapySetting.swift in Sources */,
 				4352A73C20DECF0700CAC200 /* CGMManager.swift in Sources */,
 				4353D16F203D104F007B4ECD /* CarbStoreError.swift in Sources */,
