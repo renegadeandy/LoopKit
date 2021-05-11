@@ -8,7 +8,7 @@
 
 import HealthKit
 import LoopKit
-import LoopTestingKit
+
 
 public protocol DanaRSPumpManagerStateObserver {
     func danaRSPumpManager(_ manager: DanaRSPumpManager, didUpdate state: DanaRSPumpManagerState)
@@ -32,356 +32,168 @@ private enum DanaRSPumpManagerError: LocalizedError {
     }
 }
 
-public final class DanaRSPumpManager: TestingPumpManager {
-
-    public static let managerIdentifier = "DanaRSPumpManager"
-    public static let localizedTitle = "Simulator"
-    private static let device = HKDevice(
-        name: DanaRSPumpManager.managerIdentifier,
-        manufacturer: nil,
-        model: nil,
-        hardwareVersion: nil,
-        firmwareVersion: nil,
-        softwareVersion: String(LoopKitVersionNumber),
-        localIdentifier: nil,
-        udiDeviceIdentifier: nil
-    )
-
-    private static let deliveryUnitsPerMinute = 1.5
-    private static let pulsesPerUnit: Double = 20
-    private static let pumpReservoirCapacity: Double = 200
-
-    public var pumpReservoirCapacity: Double {
-        return DanaRSPumpManager.pumpReservoirCapacity
-    }
-
-    public var reservoirFillFraction: Double {
-        get {
-            return state.reservoirUnitsRemaining / pumpReservoirCapacity
-        }
-        set {
-            state.reservoirUnitsRemaining = newValue * pumpReservoirCapacity
-        }
-    }
-
-    public var supportedBolusVolumes: [Double] {
-        return supportedBasalRates
-    }
-
-    public var supportedBasalRates: [Double] {
-        return (0...700).map { Double($0) / Double(type(of: self).pulsesPerUnit) }
-    }
-
-    public var maximumBasalScheduleEntryCount: Int {
-        return 48
-    }
-
-    public var minimumBasalScheduleEntryDuration: TimeInterval {
-        return .minutes(30)
-    }
-
-    public var testingDevice: HKDevice {
-        return type(of: self).device
-    }
-
-    public var lastReconciliation: Date? {
-        return Date()
-    }
-
-    private func basalDeliveryState(for state: DanaRSPumpManagerState) -> PumpManagerStatus.BasalDeliveryState {
-        if case .suspended(let date) = state.suspendState {
-            return .suspended(date)
-        }
-        if let temp = state.unfinalizedTempBasal, !temp.finished {
-            return .tempBasal(DoseEntry(temp))
-        }
-        if case .resumed(let date) = state.suspendState {
-            return .active(date)
-        } else {
-            return .active(Date())
-        }
-    }
-
-    private func bolusState(for state: DanaRSPumpManagerState) -> PumpManagerStatus.BolusState {
-        if let bolus = state.unfinalizedBolus, !bolus.finished {
-            return .inProgress(DoseEntry(bolus))
-        } else {
-            return .none
-        }
-    }
-
-    private func status(for state: DanaRSPumpManagerState) -> PumpManagerStatus {
-        return PumpManagerStatus(
-            timeZone: .current,
-            device: DanaRSPumpManager.device,
-            pumpBatteryChargeRemaining: state.pumpBatteryChargeRemaining,
-            basalDeliveryState: basalDeliveryState(for: state),
-            bolusState: .none)
-    }
-
-    public var pumpBatteryChargeRemaining: Double? {
-        get {
-            return state.pumpBatteryChargeRemaining
-        }
-        set {
-            state.pumpBatteryChargeRemaining = newValue
-        }
-    }
-
-    public var status: PumpManagerStatus {
-        get {
-            return status(for: self.state)
-        }
-    }
-
-    private func notifyObservers() {
-    }
-
-    public var state: DanaRSPumpManagerState {
-        didSet {
-            let newValue = state
-
-            let oldStatus = status(for: oldValue)
-            let newStatus = status(for: newValue)
-
-            if oldStatus != newStatus {
-                statusObservers.forEach { $0.pumpManager(self, didUpdate: newStatus, oldStatus: oldStatus) }
-            }
-
-            stateObservers.forEach { $0.DanaRSPumpManager(self, didUpdate: self.state) }
-
-            delegate.notify { (delegate) in
-                if newValue.reservoirUnitsRemaining != oldValue.reservoirUnitsRemaining {
-                    delegate?.pumpManager(self, didReadReservoirValue: self.state.reservoirUnitsRemaining, at: Date()) { result in
-                        // nothing to do here
-                    }
-                }
-                delegate?.pumpManagerDidUpdateState(self)
-            }
-        }
-    }
-
-    public var pumpManagerDelegate: PumpManagerDelegate? {
-        get {
-            return delegate.delegate
-        }
-        set {
-            delegate.delegate = newValue
-        }
-    }
-
-    public var delegateQueue: DispatchQueue! {
-        get {
-            return delegate.queue
-        }
-        set {
-            delegate.queue = newValue
-        }
-    }
-
-    private let delegate = WeakSynchronizedDelegate<PumpManagerDelegate>()
-
-    private var statusObservers = WeakSynchronizedSet<PumpManagerStatusObserver>()
-    private var stateObservers = WeakSynchronizedSet<DanaRSPumpManagerStateObserver>()
-
-    public init() {
-        state = DanaRSPumpManagerState(
-            reservoirUnitsRemaining: DanaRSPumpManager.pumpReservoirCapacity,
-            tempBasalEnactmentShouldError: false,
-            bolusEnactmentShouldError: false,
-            deliverySuspensionShouldError: false,
-            deliveryResumptionShouldError: false,
-            maximumBolus: 25.0,
-            maximumBasalRatePerHour: 5.0,
-            suspendState: .resumed(Date()),
-            pumpBatteryChargeRemaining: 1,
-            unfinalizedBolus: nil,
-            unfinalizedTempBasal: nil,
-            finalizedDoses: [])
-    }
-
-    public init?(rawState: RawStateValue) {
-        guard let state = (rawState["state"] as? DanaRSPumpManagerState.RawValue).flatMap(DanaRSPumpManagerState.init(rawValue:)) else {
-            return nil
-        }
-        self.state = state
-    }
-
-    public var rawState: RawStateValue {
-        return ["state": state.rawValue]
-    }
-
-    public func createBolusProgressReporter(reportingOn dispatchQueue: DispatchQueue) -> DoseProgressReporter? {
-        if case .inProgress(let dose) = status.bolusState {
-            return MockDoseProgressEstimator(reportingQueue: dispatchQueue, dose: dose)
-        }
-        return nil
-    }
-
-    public var pumpRecordsBasalProfileStartEvents: Bool {
-        return false
-    }
-
+public final class DanaRSPumpManager: PumpManager {
+    public var supportedBasalRates: [Double]
+    
+    public var supportedBolusVolumes: [Double]
+    
+    public var maximumBasalScheduleEntryCount: Int
+    
+    public var minimumBasalScheduleEntryDuration: TimeInterval
+    
+    public var pumpManagerDelegate: PumpManagerDelegate?
+    
+    public var pumpRecordsBasalProfileStartEvents: Bool
+    
+    public var pumpReservoirCapacity: Double
+    
+    public var lastReconciliation: Date?
+    
+    public var status: PumpManagerStatus
+    
     public func addStatusObserver(_ observer: PumpManagerStatusObserver, queue: DispatchQueue) {
-        statusObservers.insert(observer, queue: queue)
+        <#code#>
     }
-
-    public func addStateObserver(_ observer: DanaRSPumpManagerStateObserver, queue: DispatchQueue) {
-        stateObservers.insert(observer, queue: queue)
-    }
-
+    
     public func removeStatusObserver(_ observer: PumpManagerStatusObserver) {
-        statusObservers.removeElement(observer)
+        <#code#>
     }
-
-    public func assertCurrentPumpData() {
-
-        state.finalizeFinishedDoses()
-
-        storeDoses { (error) in
-            self.delegate.notify { (delegate) in
-                delegate?.pumpManagerRecommendsLoop(self)
-            }
-
-            guard error == nil else {
-                return
-            }
-
-            DispatchQueue.main.async {
-                let totalInsulinUsage = self.state.finalizedDoses.reduce(into: 0 as Double) { total, dose in
-                    total += dose.units
-                }
-
-                self.state.finalizedDoses = []
-                self.state.reservoirUnitsRemaining -= totalInsulinUsage
-            }
-        }
+    
+    public func ensureCurrentPumpData(completion: (() -> Void)?) {
+        <#code#>
     }
-
-    private func storeDoses(completion: @escaping (_ error: Error?) -> Void) {
-        state.finalizeFinishedDoses()
-        let pendingPumpEvents = state.dosesToStore.map { NewPumpEvent($0) }
-        delegate.notify { (delegate) in
-            delegate?.pumpManager(self, hasNewPumpEvents: pendingPumpEvents, lastReconciliation: self.lastReconciliation) { error in
-                completion(error)
-            }
-        }
-    }
-
-    public func enactTempBasal(unitsPerHour: Double, for duration: TimeInterval, completion: @escaping (PumpManagerResult<DoseEntry>) -> Void) {
-        if state.tempBasalEnactmentShouldError {
-            completion(.failure(PumpManagerError.communication(DanaRSPumpManagerError.communicationFailure)))
-        } else {
-            let now = Date()
-            if let temp = state.unfinalizedTempBasal, temp.finishTime.compare(now) == .orderedDescending {
-                state.unfinalizedTempBasal?.cancel(at: now)
-            }
-            state.finalizeFinishedDoses()
-
-            if duration < .ulpOfOne {
-                // Cancel temp basal
-                let temp = UnfinalizedDose(tempBasalRate: unitsPerHour, startTime: now, duration: duration)
-                storeDoses { (error) in
-                    completion(.success(DoseEntry(temp)))
-                }
-            } else {
-                let temp = UnfinalizedDose(tempBasalRate: unitsPerHour, startTime: now, duration: duration)
-                state.unfinalizedTempBasal = temp
-                storeDoses { (error) in
-                    completion(.success(DoseEntry(temp)))
-                }
-            }
-        }
-    }
-
-    public func enactBolus(units: Double, at startDate: Date, willRequest: @escaping (DoseEntry) -> Void, completion: @escaping (PumpManagerResult<DoseEntry>) -> Void) {
-
-        if state.bolusEnactmentShouldError {
-            completion(.failure(SetBolusError.certain(PumpManagerError.communication(DanaRSPumpManagerError.communicationFailure))))
-        } else {
-
-            state.finalizeFinishedDoses()
-
-            if let _ = state.unfinalizedBolus {
-                completion(.failure(SetBolusError.certain(PumpManagerError.deviceState(DanaRSPumpManagerError.bolusInProgress))))
-                return
-            }
-
-            if case .suspended = status.basalDeliveryState {
-                completion(.failure(SetBolusError.certain(PumpManagerError.deviceState(DanaRSPumpManagerError.pumpSuspended))))
-                return
-            }
-            let bolus = UnfinalizedDose(bolusAmount: units, startTime: Date(), duration: .minutes(units / type(of: self).deliveryUnitsPerMinute))
-            let dose = DoseEntry(bolus)
-            willRequest(dose)
-            state.unfinalizedBolus = bolus
-            storeDoses { (error) in
-                completion(.success(dose))
-            }
-        }
-    }
-
-    public func cancelBolus(completion: @escaping (PumpManagerResult<DoseEntry?>) -> Void) {
-
-        state.unfinalizedBolus?.cancel(at: Date())
-
-        storeDoses { (_) in
-            DispatchQueue.main.async {
-                self.state.finalizeFinishedDoses()
-                completion(.success(nil))
-            }
-        }
-    }
-
+    
     public func setMustProvideBLEHeartbeat(_ mustProvideBLEHeartbeat: Bool) {
-        // nothing to do here
+        <#code#>
     }
-
+    
+    public func createBolusProgressReporter(reportingOn dispatchQueue: DispatchQueue) -> DoseProgressReporter? {
+        <#code#>
+    }
+    
+    public func enactBolus(units: Double, automatic: Bool, completion: @escaping (PumpManagerResult<DoseEntry>) -> Void) {
+        <#code#>
+    }
+    
+    public func cancelBolus(completion: @escaping (PumpManagerResult<DoseEntry?>) -> Void) {
+        <#code#>
+    }
+    
+    public func enactTempBasal(unitsPerHour: Double, for duration: TimeInterval, completion: @escaping (PumpManagerResult<DoseEntry>) -> Void) {
+        <#code#>
+    }
+    
     public func suspendDelivery(completion: @escaping (Error?) -> Void) {
-        if self.state.deliverySuspensionShouldError {
-            completion(PumpManagerError.communication(DanaRSPumpManagerError.communicationFailure))
-        } else {
-            let now = Date()
-            state.unfinalizedTempBasal?.cancel(at: now)
-            state.unfinalizedBolus?.cancel(at: now)
-
-            let suspendDate = Date()
-            let suspend = UnfinalizedDose(suspendStartTime: suspendDate)
-            self.state.finalizedDoses.append(suspend)
-            self.state.suspendState = .suspended(suspendDate)
-            storeDoses { (error) in
-                completion(error)
-            }
-        }
+        <#code#>
     }
-
+    
     public func resumeDelivery(completion: @escaping (Error?) -> Void) {
-        if self.state.deliveryResumptionShouldError {
-            completion(PumpManagerError.communication(DanaRSPumpManagerError.communicationFailure))
-        } else {
-            let resumeDate = Date()
-            let resume = UnfinalizedDose(resumeStartTime: resumeDate)
-            self.state.finalizedDoses.append(resume)
-            self.state.suspendState = .resumed(resumeDate)
-            storeDoses { (error) in
-                completion(error)
+        <#code#>
+    }
+    
+    public func setMaximumTempBasalRate(_ rate: Double) {
+        <#code#>
+    }
+    
+    public func syncBasalRateSchedule(items scheduleItems: [RepeatingScheduleValue<Double>], completion: @escaping (Result<BasalRateSchedule, Error>) -> Void) {
+        <#code#>
+    }
+    
+    public var managerIdentifier: String
+    
+    public var delegateQueue: DispatchQueue!
+    
+    public init?(rawState: RawStateValue) {
+       
+    }
+
+    public var rawValue: RawValue {
+        switch self {
+        case .suspended(let date):
+            return [
+                "case": SuspendStateType.suspend.rawValue,
+                "date": date
+            ]
+        case .resumed(let date):
+            return [
+                "case": SuspendStateType.resume.rawValue,
+                "date": date
+            ]
+        }
+    }
+    
+    public enum SuspendState: Equatable, RawRepresentable {
+        public typealias RawValue = [String: Any]
+
+        private enum SuspendStateType: Int {
+            case suspend, resume
+        }
+
+        case suspended(Date)
+        case resumed(Date)
+
+        private var identifier: Int {
+            switch self {
+            case .suspended:
+                return 1
+            case .resumed:
+                return 2
+            }
+        }
+
+        public init?(rawValue: RawValue) {
+            guard let suspendStateType = rawValue["case"] as? SuspendStateType.RawValue,
+                let date = rawValue["date"] as? Date else {
+                    return nil
+            }
+            switch SuspendStateType(rawValue: suspendStateType) {
+            case .suspend?:
+                self = .suspended(date)
+            case .resume?:
+                self = .resumed(date)
+            default:
+                return nil
+            }
+        }
+
+        public var rawValue: RawValue {
+            switch self {
+            case .suspended(let date):
+                return [
+                    "case": SuspendStateType.suspend.rawValue,
+                    "date": date
+                ]
+            case .resumed(let date):
+                return [
+                    "case": SuspendStateType.resume.rawValue,
+                    "date": date
+                ]
             }
         }
     }
-
-    public func injectPumpEvents(_ pumpEvents: [NewPumpEvent]) {
-        state.finalizedDoses += pumpEvents.compactMap { $0.unfinalizedDose }
+    
+    public var rawState: RawStateValue
+    
+    public func acknowledgeAlert(alertIdentifier: Alert.AlertIdentifier) {
+        <#code#>
     }
+    
+    public func getSoundBaseURL() -> URL? {
+        <#code#>
+    }
+    
+    public func getSounds() -> [Alert.Sound] {
+        <#code#>
+    }
+    
+    public var localizedTitle: String = ""
+    
+    public var isOnboarded: Bool
+
 }
 
 extension DanaRSPumpManager {
     public var debugDescription: String {
-        return """
-        ## DanaRSPumpManager
-        status: \(status)
-        state: \(state)
-        stateObservers.count: \(stateObservers.cleanupDeallocatedElements().count)
-        statusObservers.count: \(statusObservers.cleanupDeallocatedElements().count)
-        """
+       ""
     }
 }
