@@ -104,7 +104,7 @@ public struct DanaRSPumpManagerState: RawRepresentable, Equatable {
         }
     }
 
-    public var rileyLinkConnectionManagerState: RileyLinkConnectionManagerState?
+  //  public var rileyLinkConnectionManagerState: RileyLinkConnectionManagerState?
 
     public var timeZone: TimeZone
 
@@ -120,7 +120,8 @@ public struct DanaRSPumpManagerState: RawRepresentable, Equatable {
 
     public var lastReconciliation: Date?
 
-    public init(batteryChemistry: BatteryChemistryType = .alkaline, preferredInsulinDataSource: InsulinDataSource = .pumpHistory, pumpColor: PumpColor, pumpID: String, pumpModel: PumpModel, pumpFirmwareVersion: String, pumpRegion: PumpRegion, rileyLinkConnectionManagerState: RileyLinkConnectionManagerState?, timeZone: TimeZone, suspendState: SuspendState, lastValidFrequency: Measurement<UnitFrequency>? = nil, batteryPercentage: Double? = nil, lastReservoirReading: ReservoirReading? = nil, unfinalizedBolus: UnfinalizedDose? = nil, unfinalizedTempBasal: UnfinalizedDose? = nil, pendingDoses: [UnfinalizedDose]? = nil, recentlyReconciledEvents: [Data:ReconciledDoseMapping]? = nil, lastReconciliation: Date? = nil) {
+    public init(batteryChemistry: BatteryChemistryType = .alkaline, preferredInsulinDataSource: InsulinDataSource = .pumpHistory, pumpColor: PumpColor, pumpID: String, pumpModel: PumpModel, pumpFirmwareVersion: String, pumpRegion: PumpRegion, //rileyLinkConnectionManagerState: RileyLinkConnectionManagerState?
+                 timeZone: TimeZone, suspendState: SuspendState, lastValidFrequency: Measurement<UnitFrequency>? = nil, batteryPercentage: Double? = nil, lastReservoirReading: ReservoirReading? = nil, unfinalizedBolus: UnfinalizedDose? = nil, unfinalizedTempBasal: UnfinalizedDose? = nil, pendingDoses: [UnfinalizedDose]? = nil, recentlyReconciledEvents: [Data:ReconciledDoseMapping]? = nil, lastReconciliation: Date? = nil) {
         self.batteryChemistry = batteryChemistry
         self.preferredInsulinDataSource = preferredInsulinDataSource
         self.pumpColor = pumpColor
@@ -128,7 +129,7 @@ public struct DanaRSPumpManagerState: RawRepresentable, Equatable {
         self.pumpModel = pumpModel
         self.pumpFirmwareVersion = pumpFirmwareVersion
         self.pumpRegion = pumpRegion
-        self.rileyLinkConnectionManagerState = rileyLinkConnectionManagerState
+       // self.rileyLinkConnectionManagerState = rileyLinkConnectionManagerState
         self.timeZone = timeZone
         self.suspendState = suspendState
         self.lastValidFrequency = lastValidFrequency
@@ -162,7 +163,7 @@ public struct DanaRSPumpManagerState: RawRepresentable, Equatable {
             return nil
         }
         
-        var rileyLinkConnectionManagerState: RileyLinkConnectionManagerState? = nil
+     //   var rileyLinkConnectionManagerState: RileyLinkConnectionManagerState? = nil
         
         // Migrate
         if version == 1
@@ -170,12 +171,12 @@ public struct DanaRSPumpManagerState: RawRepresentable, Equatable {
             if let oldRileyLinkPumpManagerStateRaw = rawValue["rileyLinkPumpManagerState"] as? [String : Any],
                 let connectedPeripheralIDs = oldRileyLinkPumpManagerStateRaw["connectedPeripheralIDs"] as? [String]
             {
-                rileyLinkConnectionManagerState = RileyLinkConnectionManagerState(autoConnectIDs: Set(connectedPeripheralIDs))
+            //    rileyLinkConnectionManagerState = RileyLinkConnectionManagerState(autoConnectIDs: Set(connectedPeripheralIDs))
             }
         } else {
-            if let rawState = rawValue["rileyLinkConnectionManagerState"] as? RileyLinkConnectionManagerState.RawValue {
-                rileyLinkConnectionManagerState = RileyLinkConnectionManagerState(rawValue: rawState)
-            }
+         //   if let rawState = rawValue["rileyLinkConnectionManagerState"] as? RileyLinkConnectionManagerState.RawValue {
+         //       rileyLinkConnectionManagerState = RileyLinkConnectionManagerState(rawValue: rawState)
+           // }
         }
 
         let suspendState: SuspendState
@@ -251,7 +252,7 @@ public struct DanaRSPumpManagerState: RawRepresentable, Equatable {
             pumpModel: pumpModel,
             pumpFirmwareVersion: pumpFirmwareVersion,
             pumpRegion: pumpRegion,
-            rileyLinkConnectionManagerState: rileyLinkConnectionManagerState,
+         //   rileyLinkConnectionManagerState: rileyLinkConnectionManagerState,
             timeZone: timeZone,
             suspendState: suspendState,
             lastValidFrequency: lastValidFrequency,
@@ -284,7 +285,7 @@ public struct DanaRSPumpManagerState: RawRepresentable, Equatable {
         value["batteryPercentage"] = batteryPercentage
         value["lastReservoirReading"] = lastReservoirReading?.rawValue
         value["lastValidFrequency"] = lastValidFrequency?.converted(to: .megahertz).value
-        value["rileyLinkConnectionManagerState"] = rileyLinkConnectionManagerState?.rawValue
+     //   value["rileyLinkConnectionManagerState"] = rileyLinkConnectionManagerState?.rawValue
         value["unfinalizedBolus"] = unfinalizedBolus?.rawValue
         value["unfinalizedTempBasal"] = unfinalizedTempBasal?.rawValue
         value["lastReconciliation"] = lastReconciliation
@@ -294,9 +295,11 @@ public struct DanaRSPumpManagerState: RawRepresentable, Equatable {
 }
 
 
-extension DanaRSPumpManagerState {
-    static let idleListeningEnabledDefaults: RileyLinkDevice.IdleListeningState = .enabled(timeout: .minutes(4), channel: 0)
-}
+//Not sure we need this? Seems to be used within DanaRSPumpManager - I have commented out all mentions until i understand it. **AA**
+//
+//extension DanaRSPumpManagerState {
+//    static let idleListeningEnabledDefaults: RileyLinkDevice.IdleListeningState = .enabled(timeout: .minutes(4), channel: 0)
+//}
 
 
 extension DanaRSPumpManagerState: CustomDebugStringConvertible {
@@ -321,7 +324,7 @@ extension DanaRSPumpManagerState: CustomDebugStringConvertible {
             "timeZone: \(timeZone)",
             "recentlyReconciledEvents: \(reconciliationMappings.values.map { "\($0.eventRaw.hexadecimalString) -> \($0.uuid)" })",
             "lastReconciliation: \(String(describing: lastReconciliation))",
-            String(reflecting: rileyLinkConnectionManagerState),
+         //   String(reflecting: rileyLinkConnectionManagerState),
         ].joined(separator: "\n")
     }
 }

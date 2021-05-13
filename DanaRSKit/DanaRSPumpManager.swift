@@ -52,51 +52,51 @@ public final class DanaRSPumpManager: PumpManager {
     public var status: PumpManagerStatus
     
     public func addStatusObserver(_ observer: PumpManagerStatusObserver, queue: DispatchQueue) {
-        <#code#>
+        
     }
     
     public func removeStatusObserver(_ observer: PumpManagerStatusObserver) {
-        <#code#>
+        
     }
     
     public func ensureCurrentPumpData(completion: (() -> Void)?) {
-        <#code#>
+        
     }
     
     public func setMustProvideBLEHeartbeat(_ mustProvideBLEHeartbeat: Bool) {
-        <#code#>
+        
     }
     
     public func createBolusProgressReporter(reportingOn dispatchQueue: DispatchQueue) -> DoseProgressReporter? {
-        <#code#>
+        
     }
     
     public func enactBolus(units: Double, automatic: Bool, completion: @escaping (PumpManagerResult<DoseEntry>) -> Void) {
-        <#code#>
+        
     }
     
     public func cancelBolus(completion: @escaping (PumpManagerResult<DoseEntry?>) -> Void) {
-        <#code#>
+        
     }
     
     public func enactTempBasal(unitsPerHour: Double, for duration: TimeInterval, completion: @escaping (PumpManagerResult<DoseEntry>) -> Void) {
-        <#code#>
+        
     }
     
     public func suspendDelivery(completion: @escaping (Error?) -> Void) {
-        <#code#>
+        
     }
     
     public func resumeDelivery(completion: @escaping (Error?) -> Void) {
-        <#code#>
+        
     }
     
     public func setMaximumTempBasalRate(_ rate: Double) {
-        <#code#>
+        
     }
     
     public func syncBasalRateSchedule(items scheduleItems: [RepeatingScheduleValue<Double>], completion: @escaping (Result<BasalRateSchedule, Error>) -> Void) {
-        <#code#>
+        
     }
     
     public var managerIdentifier: String
